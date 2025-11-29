@@ -36,7 +36,7 @@ O objetivo é permitir que o vendedor simule cenários de venda, antecipe taxas 
 
 Acesse a versão online e responsiva (funciona no celular):
 
-🔗 **[CLIQUE AQUI PARA ABRIR A CALCULADORA](https://santos1513lopes-lgtm.github.io/calculadora-shopee/)**
+🔗 **[https://santos1513lopes-lgtm.github.io/calculadora-shopee./](https://santos1513lopes-lgtm.github.io/calculadora-shopee/)**
 
 ---
 
