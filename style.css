@@ -1,0 +1,29 @@
+ /* ARQUIVO: style.css */
+
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
+.container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+h1, h2 { color: #ee4d2d; text-align: center; }
+.config-box { background-color: #fff1eb; border: 1px solid #ee4d2d; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+.input-group { flex: 1; min-width: 140px; margin-bottom: 10px; }
+label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9em; color: #555; }
+input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+
+/* Botões */
+.btn-container { text-align: center; margin-top: 25px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+button { padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+button:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-calc { background-color: #ee4d2d; color: white; }
+.btn-save { background-color: #28a745; color: white; }
+.btn-clear { background-color: #dc3545; color: white; }
+.btn-export { background-color: #007bff; color: white; }
+
+/* Resultados */
+.resultados { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center; border: 1px solid #e9ecef; }
+.res-item span { display: block; font-size: 1.2em; font-weight: bold; margin-top: 5px; color: #333; }
+
+/* Tabela */
+.table-container { overflow-x: auto; margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+th { background-color: #ee4d2d; color: white; }
+tr:nth-child(even) { background-color: #f9f9f9; }
