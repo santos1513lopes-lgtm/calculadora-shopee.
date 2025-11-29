@@ -38,7 +38,7 @@ O projeto foi construído com **Vanilla JavaScript** (sem frameworks), demonstra
 
 Acesse a versão online funcionando agora mesmo:
 
-🔗 **[CLIQUE AQUI PARA ABRIR A CALCULADORA](https://santos1513lopes-lgtm.github.io/calculadora-shopee/)**
+🔗 **[CLIQUE AQUI PARA ABRIR A CALCULADORA](https://santos1513lopes-lgtm.github.io/calculadora-shopee./)**
 
 ---
 
