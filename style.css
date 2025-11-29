@@ -1,29 +1,67 @@
  /* ARQUIVO: style.css */
 
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-.container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-h1, h2 { color: #ee4d2d; text-align: center; }
-.config-box { background-color: #fff1eb; border: 1px solid #ee4d2d; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-.input-group { flex: 1; min-width: 140px; margin-bottom: 10px; }
-label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9em; color: #555; }
-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+.container { max-width: 950px; margin: 0 auto; background: white; padding: 0; /* Tirei o padding geral para o sticky funcionar melhor */ border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; /* Garante bordas arredondadas */ }
+
+/* --- PAINEL FIXO (A MÁGICA ACONTECE AQUI) --- */
+.painel-fixo {
+    position: sticky; /* Cola no topo */
+    top: 0;
+    background-color: white; /* Fundo branco para não ver a tabela passando por trás */
+    z-index: 1000; /* Garante que fica por cima de tudo */
+    padding: 20px 25px 10px 25px; /* Padding interno */
+    border-bottom: 3px solid #f0f0f0; /* Uma linha para separar da tabela */
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+/* Header (Título + Engrenagem) */
+.header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+h1 { color: #ee4d2d; margin: 0; font-size: 1.5em; }
+
+/* Botão Config */
+.btn-config { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #777; transition: 0.3s; padding: 5px; }
+.btn-config:hover { color: #ee4d2d; transform: rotate(90deg); }
+
+/* Configurações (Box) */
+.config-box { 
+    background-color: #fff1eb; border: 1px solid #ee4d2d; padding: 15px; border-radius: 8px; 
+    margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; transition: all 0.3s ease-in-out; 
+}
+
+/* Inputs */
+.input-group { flex: 1; min-width: 130px; margin-bottom: 5px; }
+label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 0.85em; color: #555; }
+input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 0.95em; }
+
+/* --- MODO REVERSO COMPACTO --- */
+/* Agora fica numa linha fina, sem ocupar espaço */
+.compact-switch {
+    display: flex; align-items: center; justify-content: flex-end; /* Joga para a direita */
+    margin-bottom: 10px; font-size: 0.9em; color: #555;
+}
+.compact-switch input { width: auto; margin-right: 5px; cursor: pointer; }
+.compact-switch label { margin: 0; cursor: pointer; display: inline; }
 
 /* Botões */
-.btn-container { text-align: center; margin-top: 25px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-button { padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+.btn-container { text-align: center; margin-top: 15px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; }
 button:hover { opacity: 0.9; transform: translateY(-1px); }
 .btn-calc { background-color: #ee4d2d; color: white; }
 .btn-save { background-color: #28a745; color: white; }
-.btn-clear { background-color: #dc3545; color: white; }
+.btn-clear { background-color: #6c757d; color: white; }
 .btn-export { background-color: #007bff; color: white; }
 
 /* Resultados */
-.resultados { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center; border: 1px solid #e9ecef; }
-.res-item span { display: block; font-size: 1.2em; font-weight: bold; margin-top: 5px; color: #333; }
+.resultados { background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; text-align: center; border: 1px solid #e9ecef; }
+.res-item span { display: block; font-size: 1.1em; font-weight: bold; margin-top: 3px; color: #333; }
 
-/* Tabela */
-.table-container { overflow-x: auto; margin-top: 20px; }
+/* Tabela e Botões Pequenos */
+.table-padding { padding: 25px; } /* Espaço para a tabela respirar embaixo do painel fixo */
+.table-container { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
 th { background-color: #ee4d2d; color: white; }
 tr:nth-child(even) { background-color: #f9f9f9; }
+.btn-small { padding: 5px 8px; font-size: 12px; margin: 0 2px; }
+.btn-edit { background-color: #ffc107; color: #333; }
+.btn-delete { background-color: #dc3545; color: white; }

@@ -4,92 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Shopee Pro</title>
-    
     <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
 
 <div class="container">
-    <h1>Calculadora de Lucro Shopee</h1>
-
-    <div class="config-box">
-        <div class="input-group">
-            <label>Taxa Shopee (%)</label>
-            <input type="number" id="cfgTaxaPorcentagem" value="20">
-        </div>
-        <div class="input-group">
-            <label>Taxa Fixa (R$)</label>
-            <input type="number" id="cfgTaxaFixa" value="4.00">
-        </div>
-        <div class="input-group">
-            <label>Impostos (%)</label>
-            <input type="number" id="cfgImpostos" value="0">
-        </div>
-    </div>
-
-    <div style="text-align: center; margin-bottom: 20px; background: #fff8f0; padding: 10px; border-radius: 5px; border: 1px dashed #ee4d2d;">
-        <input type="checkbox" id="switchModo" onchange="alternarModo()">
-        <label for="switchModo" style="cursor: pointer; font-weight: bold; color: #333; margin-left: 5px;">
-            Modo Reverso: Calcular Preço de Venda ideal
-        </label>
-    </div>
-
-    <h2>Novo Cálculo</h2>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <div class="input-group" style="flex: 2; min-width: 200px;">
-            <label>Nome do Produto</label>
-            <input type="text" id="nomeProduto" placeholder="Ex: Fone Bluetooth">
-        </div>
-        <div class="input-group">
-            <label>Custo Produto (R$)</label>
-            <input type="number" id="custoProduto" placeholder="0.00">
-        </div>
-        <div class="input-group">
-            <label>Insumos (R$)</label>
-            <input type="number" id="insumos" value="0.80">
-        </div>
+    
+    <div class="painel-fixo">
         
-        <div class="input-group" id="grupoPrecoVenda">
-            <label>Preço Venda (R$)</label>
-            <input type="number" id="precoVenda" placeholder="0.00">
+        <div class="header-top">
+            <h1>Calculadora Shopee</h1>
+            <button id="btnConfig" class="btn-config" onclick="toggleConfig()" title="Configurações">
+                ⚙️
+            </button>
         </div>
 
-        <div class="input-group" id="grupoMargemDesejada" style="display: none;">
-            <label>Margem Desejada (%)</label>
-            <input type="number" id="margemDesejada" placeholder="Ex: 20">
+        <div id="boxConfiguracoes" class="config-box" style="display: none;">
+            <div style="width: 100%; text-align: center; margin-bottom: 5px; font-weight: bold; color: #ee4d2d;">
+                Configurações de Taxas
+            </div>
+            <div class="input-group">
+                <label>Taxa Shopee (%)</label>
+                <input type="number" id="cfgTaxaPorcentagem" value="20">
+            </div>
+            <div class="input-group">
+                <label>Taxa Fixa (R$)</label>
+                <input type="number" id="cfgTaxaFixa" value="4.00">
+            </div>
+            <div class="input-group">
+                <label>Impostos (%)</label>
+                <input type="number" id="cfgImpostos" value="0">
+            </div>
+            <div class="input-group">
+                <label>Shopee Acelera (%)</label>
+                <input type="number" id="cfgAntecipa" value="0">
+            </div>
+        </div>
+
+        <div class="compact-switch">
+            <input type="checkbox" id="switchModo" onchange="alternarModo()">
+            <label for="switchModo">Calcular Preço Ideal (Reverso)</label>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="input-group" style="flex: 2; min-width: 180px;">
+                <label>Nome do Produto</label>
+                <input type="text" id="nomeProduto" placeholder="Ex: Fone Bluetooth">
+            </div>
+            <div class="input-group">
+                <label>Custo</label>
+                <input type="text" id="custoProduto" placeholder="R$ 0,00" onkeyup="formatarMoedaInput(this)">
+            </div>
+            <div class="input-group">
+                <label>Insumos/Frete</label>
+                <input type="text" id="insumos" placeholder="R$ 0,00" onkeyup="formatarMoedaInput(this)">
+            </div>
+            
+            <div class="input-group" id="grupoPrecoVenda">
+                <label>Preço Venda</label>
+                <input type="text" id="precoVenda" placeholder="R$ 0,00" onkeyup="formatarMoedaInput(this)">
+            </div>
+
+            <div class="input-group" id="grupoMargemDesejada" style="display: none;">
+                <label>Margem Desejada (%)</label>
+                <input type="number" id="margemDesejada" placeholder="Ex: 20">
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn-calc" onclick="calcular()">Calcular</button>
+            <button class="btn-save" onclick="salvar()">Salvar</button>
+            <button class="btn-clear" onclick="limparTabela()">Limpar</button>
+            <button class="btn-export" onclick="exportarExcel()">Excel</button>
+        </div>
+
+        <div class="resultados">
+            <div class="res-item">Taxas Totais:<span id="resTaxas">R$ 0,00</span></div>
+            <div class="res-item">Impostos:<span id="resImpostos">R$ 0,00</span></div>
+            <div class="res-item">Lucro Líquido:<span id="resLucro" style="color: green;">R$ 0,00</span></div>
+            <div class="res-item">Margem:<span id="resMargem" style="color: blue;">0%</span></div>
+        </div>
+    </div> <div class="table-padding">
+        <div class="table-container">
+            <table id="tabelaHistorico">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Custo Total</th>
+                        <th>Venda</th>
+                        <th>Taxas (Totais)</th>
+                        <th>Lucro</th>
+                        <th>Margem</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
         </div>
     </div>
 
-    <div class="btn-container">
-        <button class="btn-calc" onclick="calcular()">Calcular</button>
-        <button class="btn-save" onclick="salvar()">Salvar na Lista</button>
-        <button class="btn-clear" onclick="limparTabela()">Limpar Lista</button>
-        <button class="btn-export" onclick="exportarExcel()">Exportar Excel</button>
-    </div>
-
-    <div class="resultados">
-        <div class="res-item">Taxas Shopee:<span id="resTaxas">R$ 0,00</span></div>
-        <div class="res-item">Impostos:<span id="resImpostos">R$ 0,00</span></div>
-        <div class="res-item">Lucro Líquido:<span id="resLucro" style="color: green;">R$ 0,00</span></div>
-        <div class="res-item">Margem:<span id="resMargem" style="color: blue;">0%</span></div>
-    </div>
-
-    <div class="table-container">
-        <table id="tabelaHistorico">
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Custo Total</th>
-                    <th>Venda</th>
-                    <th>Taxas</th>
-                    <th>Lucro</th>
-                    <th>Margem</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
 </div>
 
 <script src="script.js"></script>
