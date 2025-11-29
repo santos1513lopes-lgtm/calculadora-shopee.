@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -23,21 +23,25 @@
             <div style="width: 100%; text-align: center; margin-bottom: 5px; font-weight: bold; color: #ee4d2d;">
                 Configurações de Taxas
             </div>
+            
             <div class="input-group">
                 <label>Taxa Shopee (%)</label>
-                <input type="number" id="cfgTaxaPorcentagem" value="20">
+                <input type="number" id="cfgTaxaPorcentagem" value="20" onchange="salvarConfig()">
             </div>
+            
             <div class="input-group">
                 <label>Taxa Fixa (R$)</label>
-                <input type="number" id="cfgTaxaFixa" value="4.00">
+                <input type="number" id="cfgTaxaFixa" value="4.00" onchange="salvarConfig()">
             </div>
+            
             <div class="input-group">
                 <label>Impostos (%)</label>
-                <input type="number" id="cfgImpostos" value="0">
+                <input type="number" id="cfgImpostos" value="0" onchange="salvarConfig()">
             </div>
+            
             <div class="input-group">
                 <label>Shopee Acelera (%)</label>
-                <input type="number" id="cfgAntecipa" value="0">
+                <input type="number" id="cfgAntecipa" value="0" onchange="salvarConfig()">
             </div>
         </div>
 
