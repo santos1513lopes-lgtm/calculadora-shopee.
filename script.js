@@ -1,6 +1,15 @@
- // ARQUIVO: script.js
+  // ARQUIVO: script.js
 
-// --- CONFIGURAÇÕES ---
+// 1. CARREGAR DADOS AO INICIAR
+// Tenta pegar a lista salva. Se não tiver nada, cria uma lista vazia.
+let listaHistorico = JSON.parse(localStorage.getItem('shopee_db')) || [];
+
+// Assim que a página carrega, desenha a tabela com o que tiver na memória
+window.onload = function() {
+    renderizarTabela();
+};
+
+// --- CONFIGURAÇÕES VISUAIS ---
 function toggleConfig() {
     let box = document.getElementById('boxConfiguracoes');
     let btn = document.getElementById('btnConfig');
@@ -15,22 +24,6 @@ function toggleConfig() {
     }
 }
 
-// --- MÁSCARAS ---
-function formatarMoedaInput(input) {
-    let valor = input.value.replace(/\D/g, "");
-    valor = (valor / 100).toFixed(2) + "";
-    valor = valor.replace(".", ",");
-    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-    input.value = "R$ " + valor;
-}
-
-function converterMoeda(valorString) {
-    if (!valorString) return 0;
-    let limpo = valorString.replace("R$", "").replace(/\./g, "").replace(",", ".");
-    return parseFloat(limpo) || 0;
-}
-
-// --- LÓGICA ---
 function alternarModo() {
     let checkbox = document.getElementById('switchModo');
     let divPreco = document.getElementById('grupoPrecoVenda');
@@ -45,12 +38,27 @@ function alternarModo() {
     }
 }
 
+// --- MÁSCARAS E CONVERSÃO ---
+function formatarMoedaInput(input) {
+    let valor = input.value.replace(/\D/g, "");
+    valor = (valor / 100).toFixed(2) + "";
+    valor = valor.replace(".", ",");
+    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+    input.value = "R$ " + valor;
+}
+
+function converterMoeda(valorString) {
+    if (!valorString) return 0;
+    let limpo = valorString.replace("R$", "").replace(/\./g, "").replace(",", ".");
+    return parseFloat(limpo) || 0;
+}
+
+// --- CÁLCULOS ---
 function pegarValores() {
-    // Agora pegamos também a Taxa Acelera/Antecipa
     let taxaShopeePorc = parseFloat(document.getElementById('cfgTaxaPorcentagem').value) || 0;
     let taxaShopeeFixa = parseFloat(document.getElementById('cfgTaxaFixa').value) || 0;
     let impostoPorc = parseFloat(document.getElementById('cfgImpostos').value) || 0;
-    let antecipaPorc = parseFloat(document.getElementById('cfgAntecipa').value) || 0; // NOVO
+    let antecipaPorc = parseFloat(document.getElementById('cfgAntecipa').value) || 0;
 
     let custo = converterMoeda(document.getElementById('custoProduto').value);
     let insumos = converterMoeda(document.getElementById('insumos').value);
@@ -69,38 +77,29 @@ function calcular() {
     let v = pegarValores();
     let precoVendaFinal = 0;
     let custoTotal = v.custo + v.insumos;
-
-    // Soma de todas as porcentagens que saem do preço de venda
     let somaPorcentagens = (v.taxaShopeePorc + v.impostoPorc + v.antecipaPorc) / 100;
 
     if (v.modoReverso) {
-        // No modo reverso, a margem também entra no denominador
         let denominador = 1 - (somaPorcentagens + (v.margemDesejada / 100));
-        
-        if (denominador <= 0) { alert("Taxas impossíveis! (Passou de 100%)"); return null; }
-        
+        if (denominador <= 0) { alert("Taxas impossíveis!"); return null; }
         precoVendaFinal = (custoTotal + v.taxaShopeeFixa) / denominador;
     } else {
         precoVendaFinal = v.vendaInput;
     }
 
-    // Cálculos Individuais
     let valorTaxaShopee = (precoVendaFinal * (v.taxaShopeePorc / 100)) + v.taxaShopeeFixa;
     let valorImpostos = precoVendaFinal * (v.impostoPorc / 100);
-    let valorAntecipa = precoVendaFinal * (v.antecipaPorc / 100); // Valor em Reais do Antecipa
-    
-    // Total de taxas para exibir
+    let valorAntecipa = precoVendaFinal * (v.antecipaPorc / 100);
     let totalTaxas = valorTaxaShopee + valorImpostos + valorAntecipa;
 
     let lucroLiquido = precoVendaFinal - custoTotal - totalTaxas;
-    
     let margem = 0;
     if (precoVendaFinal > 0) margem = (lucroLiquido / precoVendaFinal) * 100;
 
     // Atualiza a tela
     const fmt = {style: 'currency', currency: 'BRL'};
     document.getElementById('resTaxas').innerText = totalTaxas.toLocaleString('pt-BR', fmt);
-    document.getElementById('resImpostos').innerText = valorImpostos.toLocaleString('pt-BR', fmt); // Mantive só imposto aqui, mas o total acima soma tudo
+    document.getElementById('resImpostos').innerText = valorImpostos.toLocaleString('pt-BR', fmt);
     document.getElementById('resLucro').innerText = lucroLiquido.toLocaleString('pt-BR', fmt);
     document.getElementById('resMargem').innerText = margem.toFixed(2) + '%';
     
@@ -110,74 +109,124 @@ function calcular() {
         formatarMoedaInput(inputPreco);
     }
 
+    // Retorna o objeto completo com os resultados
     return { ...v, custoTotal, venda: precoVendaFinal, totalTaxas, lucroLiquido, margem };
 }
 
-// --- TABELA ---
+// --- GERENCIAMENTO DA TABELA E MEMÓRIA ---
+
 function salvar() {
     let dados = calcular();
     if (!dados || dados.venda <= 0) { alert("Cálculo inválido!"); return; }
 
-    let tabela = document.getElementById('tabelaHistorico').getElementsByTagName('tbody')[0];
-    let novaLinha = tabela.insertRow();
-    const fmtDinheiro = (val) => val.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+    // 1. Adiciona o novo cálculo na lista da memória
+    listaHistorico.push(dados);
+    
+    // 2. Salva no navegador
+    atualizarMemoria();
 
-    novaLinha.insertCell(0).innerText = dados.nome;
-    novaLinha.insertCell(1).innerText = fmtDinheiro(dados.custoTotal);
-    let celVenda = novaLinha.insertCell(2);
-    celVenda.innerText = fmtDinheiro(dados.venda);
-    if(dados.modoReverso) celVenda.style.color = "blue";
-    
-    // Na coluna taxas, mostra a soma de tudo (Shopee + Imposto + Antecipa)
-    novaLinha.insertCell(3).innerText = fmtDinheiro(dados.totalTaxas);
-    
-    let celLucro = novaLinha.insertCell(4);
-    celLucro.innerText = fmtDinheiro(dados.lucroLiquido);
-    celLucro.style.color = dados.lucroLiquido >= 0 ? "green" : "red";
-    celLucro.style.fontWeight = "bold";
-
-    novaLinha.insertCell(5).innerText = dados.margem.toFixed(2).replace('.', ',') + '%';
-    
-    let celAcoes = novaLinha.insertCell(6);
-    celAcoes.innerHTML = `<button class="btn-small btn-edit" onclick="editarItem(this)">✏️</button><button class="btn-small btn-delete" onclick="excluirItem(this)">🗑️</button>`;
+    // 3. Redesenha a tabela
+    renderizarTabela();
 }
 
-function excluirItem(botao) { botao.parentNode.parentNode.remove(); }
+function excluirItem(index) {
+    // Remove o item da lista baseado na posição (index)
+    listaHistorico.splice(index, 1);
+    atualizarMemoria();
+    renderizarTabela();
+}
 
-function editarItem(botao) {
-    let linha = botao.parentNode.parentNode;
-    let colunas = linha.getElementsByTagName('td');
+function editarItem(index) {
+    let dados = listaHistorico[index];
+
+    // Joga os valores de volta para os inputs
+    document.getElementById('nomeProduto').value = dados.nome;
     
-    document.getElementById('nomeProduto').value = colunas[0].innerText;
-    function restaurarInput(id, val) {
+    // Função auxiliar para preencher inputs de moeda
+    function setInputMoeda(id, valorNumerico) {
         let input = document.getElementById(id);
-        input.value = val.replace(/\D/g, ""); 
+        input.value = valorNumerico.toFixed(2).replace('.', '');
         formatarMoedaInput(input);
     }
-    restaurarInput('custoProduto', colunas[1].innerText);
-    document.getElementById('insumos').value = "R$ 0,00"; // Simplificação
-    restaurarInput('precoVenda', colunas[2].innerText);
-    
-    document.getElementById('switchModo').checked = false;
-    alternarModo();
-    linha.remove();
+
+    setInputMoeda('custoProduto', dados.custo); // Custo original
+    setInputMoeda('insumos', dados.insumos);    // Insumos originais
+    setInputMoeda('precoVenda', dados.venda);   // Preço Venda
+
+    // Remove da lista (para o usuário salvar de novo depois de editar)
+    excluirItem(index);
 }
 
 function limparTabela() {
-    if(confirm("Apagar tudo?")) document.getElementById('tabelaHistorico').getElementsByTagName('tbody')[0].innerHTML = "";
+    if(confirm("Apagar todo o histórico salvo?")) {
+        listaHistorico = []; // Zera a lista
+        atualizarMemoria();  // Salva vazio
+        renderizarTabela();  // Limpa tela
+    }
+}
+
+// FUNÇÃO MÁGICA: Grava a lista no navegador
+function atualizarMemoria() {
+    localStorage.setItem('shopee_db', JSON.stringify(listaHistorico));
+}
+
+// FUNÇÃO MÁGICA 2: Lê a lista e cria o HTML
+function renderizarTabela() {
+    let tbody = document.getElementById('tabelaHistorico').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = ""; // Limpa a tabela atual para redesenhar do zero
+
+    const fmtDinheiro = (val) => val.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+
+    // Para cada item na lista, cria uma linha
+    listaHistorico.forEach((item, index) => {
+        let novaLinha = tbody.insertRow();
+
+        novaLinha.insertCell(0).innerText = item.nome;
+        novaLinha.insertCell(1).innerText = fmtDinheiro(item.custoTotal);
+        
+        let celVenda = novaLinha.insertCell(2);
+        celVenda.innerText = fmtDinheiro(item.venda);
+        if(item.modoReverso) celVenda.style.color = "blue";
+
+        novaLinha.insertCell(3).innerText = fmtDinheiro(item.totalTaxas);
+        
+        let celLucro = novaLinha.insertCell(4);
+        celLucro.innerText = fmtDinheiro(item.lucroLiquido);
+        celLucro.style.color = item.lucroLiquido >= 0 ? "green" : "red";
+        celLucro.style.fontWeight = "bold";
+
+        novaLinha.insertCell(5).innerText = item.margem.toFixed(2).replace('.', ',') + '%';
+
+        // Botões de Ação (passamos o index para saber qual apagar/editar)
+        let celAcoes = novaLinha.insertCell(6);
+        celAcoes.innerHTML = `
+            <button class="btn-small btn-edit" onclick="editarItem(${index})">✏️</button>
+            <button class="btn-small btn-delete" onclick="excluirItem(${index})">🗑️</button>
+        `;
+    });
 }
 
 function exportarExcel() {
-    let tabela = document.getElementById("tabelaHistorico");
-    let linhas = tabela.rows;
     let csv = [];
-    for (let i = 0; i < linhas.length; i++) {
-        let linha = [], colunas = linhas[i].cells;
-        for (let j = 0; j < colunas.length - 1; j++) linha.push(colunas[j].innerText);
+    // Cabeçalho
+    csv.push("Produto;Custo Total;Venda;Taxas;Lucro;Margem");
+
+    // Dados
+    listaHistorico.forEach(item => {
+        let linha = [
+            item.nome,
+            item.custoTotal.toFixed(2).replace('.', ','),
+            item.venda.toFixed(2).replace('.', ','),
+            item.totalTaxas.toFixed(2).replace('.', ','),
+            item.lucroLiquido.toFixed(2).replace('.', ','),
+            item.margem.toFixed(2).replace('.', ',') + '%'
+        ];
         csv.push(linha.join(";"));
-    }
+    });
+
+    let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
     let link = document.createElement("a");
-    link.href = window.URL.createObjectURL(new Blob([csv.join("\n")], {type: "text/csv"}));
-    link.download = "Shopee_Calc.csv";
+    link.href = window.URL.createObjectURL(csvFile);
+    link.download = "Shopee_Historico.csv";
     link.click();
 }
