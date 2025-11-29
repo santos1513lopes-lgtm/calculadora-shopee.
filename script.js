@@ -4,14 +4,13 @@
 let listaHistorico = JSON.parse(localStorage.getItem('shopee_db')) || [];
 
 window.onload = function() {
-    carregarConfig();   // Taxas
-    carregarTema();     // <--- TEMA (Dark/Light)
-    renderizarTabela(); // Produtos
+    carregarConfig();   // Carrega taxas
+    carregarTema();     // Carrega tema (Dark/Light)
+    renderizarTabela(); // Carrega produtos
 };
 
-// --- 2. GERENCIAMENTO DE TEMA (DARK MODE) ---
+// --- 2. GERENCIAMENTO DE TEMA ---
 function alternarTema() {
-    // Verifica o tema atual
     let html = document.documentElement;
     let temaAtual = html.getAttribute('data-theme');
     let btnIcon = document.getElementById('iconTema');
@@ -19,11 +18,11 @@ function alternarTema() {
     if (temaAtual === 'dark') {
         html.setAttribute('data-theme', 'light');
         localStorage.setItem('shopee_theme', 'light');
-        btnIcon.innerText = '🌙'; // Lua para ir pro escuro
+        btnIcon.innerText = '🌙';
     } else {
         html.setAttribute('data-theme', 'dark');
         localStorage.setItem('shopee_theme', 'dark');
-        btnIcon.innerText = '☀️'; // Sol para ir pro claro
+        btnIcon.innerText = '☀️';
     }
 }
 
@@ -40,7 +39,7 @@ function carregarTema() {
     }
 }
 
-// --- 3. GERENCIAMENTO DE CONFIGURAÇÕES ---
+// --- 3. CONFIGURAÇÕES ---
 function salvarConfig() {
     let config = {
         taxaPorc: document.getElementById('cfgTaxaPorcentagem').value,
@@ -67,7 +66,7 @@ function toggleConfig() {
     let btn = document.getElementById('btnConfig');
     if (box.style.display === 'none') {
         box.style.display = 'flex';
-        btn.classList.add('rotate'); // Adiciona classe CSS para girar
+        btn.classList.add('rotate');
     } else {
         box.style.display = 'none';
         btn.classList.remove('rotate');
@@ -154,20 +153,42 @@ function calcular() {
     
     if (v.modoReverso) {
         let inputPreco = document.getElementById('precoVenda');
-        inputPreco.value = precoVendaFinal.toFixed(2).replace('.', '');
-        formatarMoedaInput(inputPreco);
+        // Só atualiza o input visual se o usuário não estiver digitando lá agora (pra não bugar)
+        if (document.activeElement !== inputPreco) {
+            inputPreco.value = precoVendaFinal.toFixed(2).replace('.', '');
+            formatarMoedaInput(inputPreco);
+        }
     }
 
     return { ...v, custoTotal, venda: precoVendaFinal, totalTaxas, lucroLiquido, margem };
 }
 
 // --- 6. TABELA E AÇÕES ---
+
 function salvar() {
     let dados = calcular();
     if (!dados || dados.venda <= 0) { alert("Cálculo inválido!"); return; }
+    
+    // 1. Salva na lista e memória
     listaHistorico.push(dados);
     atualizarMemoria();
     renderizarTabela();
+
+    // 2. LIMPAR CAMPOS APÓS SALVAR (A Nova Funcionalidade)
+    document.getElementById('nomeProduto').value = "";
+    document.getElementById('custoProduto').value = "";
+    document.getElementById('insumos').value = "";
+    document.getElementById('precoVenda').value = "";
+    
+    // 3. Reseta também o painel de resultados para R$ 0,00
+    const fmtZero = "R$ 0,00";
+    document.getElementById('resTaxas').innerText = fmtZero;
+    document.getElementById('resImpostos').innerText = fmtZero;
+    document.getElementById('resLucro').innerText = fmtZero;
+    document.getElementById('resMargem').innerText = "0%";
+
+    // 4. Coloca o cursor de volta no campo Nome para digitar o próximo
+    document.getElementById('nomeProduto').focus();
 }
 
 function excluirItem(index) {
@@ -189,6 +210,10 @@ function editarItem(index) {
     setInputMoeda('insumos', dados.insumos);
     setInputMoeda('precoVenda', dados.venda);
     
+    // Recalcula para mostrar os números no painel
+    calcular();
+    
+    // Remove da lista para evitar duplicidade ao salvar de novo
     excluirItem(index);
 }
 
@@ -215,7 +240,7 @@ function renderizarTabela() {
         novaLinha.insertCell(1).innerText = fmtDinheiro(item.custoTotal);
         let celVenda = novaLinha.insertCell(2);
         celVenda.innerText = fmtDinheiro(item.venda);
-        if(item.modoReverso) celVenda.style.color = "#007bff"; // Azul padrão
+        if(item.modoReverso) celVenda.style.color = "#007bff"; 
         
         novaLinha.insertCell(3).innerText = fmtDinheiro(item.totalTaxas);
         
@@ -234,6 +259,7 @@ function renderizarTabela() {
     });
 }
 
+// --- 7. EXPORTAR E RESTAURAR ---
 function exportarExcel() {
     let csv = [];
     csv.push("Produto;Custo Total;Venda;Taxas;Lucro;Margem");
@@ -271,11 +297,12 @@ function importarBackup(input) {
                     let nome = colunas[0];
                     let custoTotal = converterMoeda(colunas[1]); 
                     let venda = converterMoeda(colunas[2]);
-                    // Recálculo rápido
+                    
                     let taxaShopeePorc = parseFloat(document.getElementById('cfgTaxaPorcentagem').value) || 0;
                     let taxaShopeeFixa = parseFloat(document.getElementById('cfgTaxaFixa').value) || 0;
                     let impostoPorc = parseFloat(document.getElementById('cfgImpostos').value) || 0;
                     let antecipaPorc = parseFloat(document.getElementById('cfgAntecipa').value) || 0;
+
                     let precoVendaFinal = venda;
                     let valorTaxaShopee = (precoVendaFinal * (taxaShopeePorc / 100)) + taxaShopeeFixa;
                     let valorImpostos = precoVendaFinal * (impostoPorc / 100);
