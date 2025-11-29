@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -14,13 +14,18 @@
         
         <div class="header-top">
             <h1>Calculadora Shopee</h1>
-            <button id="btnConfig" class="btn-config" onclick="toggleConfig()" title="Configurações">
-                ⚙️
-            </button>
+            <div class="header-actions">
+                <button id="btnTema" class="btn-icon" onclick="alternarTema()" title="Mudar Tema">
+                    <span id="iconTema">🌙</span>
+                </button>
+                <button id="btnConfig" class="btn-icon" onclick="toggleConfig()" title="Configurações">
+                    ⚙️
+                </button>
+            </div>
         </div>
 
         <div id="boxConfiguracoes" class="config-box" style="display: none;">
-            <div style="width: 100%; text-align: center; margin-bottom: 5px; font-weight: bold; color: #ee4d2d;">
+            <div style="width: 100%; text-align: center; margin-bottom: 5px; font-weight: bold; color: var(--shopee-orange);">
                 Configurações de Taxas
             </div>
             
@@ -90,9 +95,11 @@
             <div class="res-item">Taxas Totais:<span id="resTaxas">R$ 0,00</span></div>
             <div class="res-item">Impostos:<span id="resImpostos">R$ 0,00</span></div>
             <div class="res-item">Lucro Líquido:<span id="resLucro" style="color: green;">R$ 0,00</span></div>
-            <div class="res-item">Margem:<span id="resMargem" style="color: blue;">0%</span></div>
+            <div class="res-item">Margem:<span id="resMargem" style="color: #007bff;">0%</span></div>
         </div>
-    </div> <div class="table-padding">
+    </div> 
+
+    <div class="table-padding">
         <div class="table-container">
             <table id="tabelaHistorico">
                 <thead>

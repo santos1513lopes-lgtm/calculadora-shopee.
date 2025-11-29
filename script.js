@@ -4,11 +4,43 @@
 let listaHistorico = JSON.parse(localStorage.getItem('shopee_db')) || [];
 
 window.onload = function() {
-    carregarConfig();   // Carrega taxas salvas
-    renderizarTabela(); // Carrega produtos salvos
+    carregarConfig();   // Taxas
+    carregarTema();     // <--- TEMA (Dark/Light)
+    renderizarTabela(); // Produtos
 };
 
-// --- 2. GERENCIAMENTO DE CONFIGURAÇÕES ---
+// --- 2. GERENCIAMENTO DE TEMA (DARK MODE) ---
+function alternarTema() {
+    // Verifica o tema atual
+    let html = document.documentElement;
+    let temaAtual = html.getAttribute('data-theme');
+    let btnIcon = document.getElementById('iconTema');
+    
+    if (temaAtual === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        localStorage.setItem('shopee_theme', 'light');
+        btnIcon.innerText = '🌙'; // Lua para ir pro escuro
+    } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('shopee_theme', 'dark');
+        btnIcon.innerText = '☀️'; // Sol para ir pro claro
+    }
+}
+
+function carregarTema() {
+    let temaSalvo = localStorage.getItem('shopee_theme');
+    let btnIcon = document.getElementById('iconTema');
+    
+    if (temaSalvo === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if(btnIcon) btnIcon.innerText = '☀️';
+    } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        if(btnIcon) btnIcon.innerText = '🌙';
+    }
+}
+
+// --- 3. GERENCIAMENTO DE CONFIGURAÇÕES ---
 function salvarConfig() {
     let config = {
         taxaPorc: document.getElementById('cfgTaxaPorcentagem').value,
@@ -17,7 +49,7 @@ function salvarConfig() {
         antecipa: document.getElementById('cfgAntecipa').value
     };
     localStorage.setItem('shopee_config', JSON.stringify(config));
-    calcular(); // Recalcula valores na tela se houver
+    calcular(); 
 }
 
 function carregarConfig() {
@@ -30,22 +62,19 @@ function carregarConfig() {
     }
 }
 
-// --- 3. VISUAL ---
 function toggleConfig() {
     let box = document.getElementById('boxConfiguracoes');
     let btn = document.getElementById('btnConfig');
     if (box.style.display === 'none') {
         box.style.display = 'flex';
-        btn.style.color = "#ee4d2d";
-        btn.style.transform = "rotate(90deg)";
+        btn.classList.add('rotate'); // Adiciona classe CSS para girar
     } else {
         box.style.display = 'none';
-        btn.style.color = "#777";
-        btn.style.transform = "rotate(0deg)";
+        btn.classList.remove('rotate');
     }
 }
 
-// --- 4. MÁSCARAS E FORMATAÇÃO ---
+// --- 4. FORMATAÇÃO E INPUTS ---
 function formatarMoedaInput(input) {
     let valor = input.value.replace(/\D/g, "");
     valor = (valor / 100).toFixed(2) + "";
@@ -60,7 +89,7 @@ function converterMoeda(valorString) {
     return parseFloat(limpo) || 0;
 }
 
-// --- 5. CÁLCULO CORE ---
+// --- 5. CÁLCULO ---
 function alternarModo() {
     let checkbox = document.getElementById('switchModo');
     let divPreco = document.getElementById('grupoPrecoVenda');
@@ -164,7 +193,7 @@ function editarItem(index) {
 }
 
 function limparTabela() {
-    if(confirm("Apagar todo o histórico salvo?")) {
+    if(confirm("Apagar tudo?")) {
         listaHistorico = [];
         atualizarMemoria();
         renderizarTabela();
@@ -186,13 +215,17 @@ function renderizarTabela() {
         novaLinha.insertCell(1).innerText = fmtDinheiro(item.custoTotal);
         let celVenda = novaLinha.insertCell(2);
         celVenda.innerText = fmtDinheiro(item.venda);
-        if(item.modoReverso) celVenda.style.color = "blue";
+        if(item.modoReverso) celVenda.style.color = "#007bff"; // Azul padrão
+        
         novaLinha.insertCell(3).innerText = fmtDinheiro(item.totalTaxas);
+        
         let celLucro = novaLinha.insertCell(4);
         celLucro.innerText = fmtDinheiro(item.lucroLiquido);
         celLucro.style.color = item.lucroLiquido >= 0 ? "green" : "red";
         celLucro.style.fontWeight = "bold";
+        
         novaLinha.insertCell(5).innerText = item.margem.toFixed(2).replace('.', ',') + '%';
+        
         let celAcoes = novaLinha.insertCell(6);
         celAcoes.innerHTML = `
             <button class="btn-small btn-edit" onclick="editarItem(${index})">✏️</button>
@@ -201,7 +234,6 @@ function renderizarTabela() {
     });
 }
 
-// --- 7. EXPORTAR E RESTAURAR (BACKUP) ---
 function exportarExcel() {
     let csv = [];
     csv.push("Produto;Custo Total;Venda;Taxas;Lucro;Margem");
@@ -226,13 +258,11 @@ function exportarExcel() {
 function importarBackup(input) {
     let arquivo = input.files[0];
     if (!arquivo) return;
-
     let leitor = new FileReader();
     leitor.onload = function(e) {
         let texto = e.target.result;
         let linhas = texto.split('\n');
         let itensImportados = 0;
-
         for (let i = 1; i < linhas.length; i++) {
             let linha = linhas[i].trim();
             if (linha) {
@@ -241,13 +271,11 @@ function importarBackup(input) {
                     let nome = colunas[0];
                     let custoTotal = converterMoeda(colunas[1]); 
                     let venda = converterMoeda(colunas[2]);
-                    
-                    // Recalcula taxas com base na config atual para integridade
+                    // Recálculo rápido
                     let taxaShopeePorc = parseFloat(document.getElementById('cfgTaxaPorcentagem').value) || 0;
                     let taxaShopeeFixa = parseFloat(document.getElementById('cfgTaxaFixa').value) || 0;
                     let impostoPorc = parseFloat(document.getElementById('cfgImpostos').value) || 0;
                     let antecipaPorc = parseFloat(document.getElementById('cfgAntecipa').value) || 0;
-
                     let precoVendaFinal = venda;
                     let valorTaxaShopee = (precoVendaFinal * (taxaShopeePorc / 100)) + taxaShopeeFixa;
                     let valorImpostos = precoVendaFinal * (impostoPorc / 100);
@@ -258,15 +286,9 @@ function importarBackup(input) {
                     if (precoVendaFinal > 0) margem = (lucroLiquido / precoVendaFinal) * 100;
 
                     let novoItem = {
-                        nome: nome,
-                        custo: custoTotal,
-                        insumos: 0,
-                        custoTotal: custoTotal,
-                        venda: precoVendaFinal,
-                        totalTaxas: totalTaxas,
-                        lucroLiquido: lucroLiquido,
-                        margem: margem,
-                        modoReverso: false
+                        nome: nome, custo: custoTotal, insumos: 0, custoTotal: custoTotal,
+                        venda: precoVendaFinal, totalTaxas: totalTaxas, lucroLiquido: lucroLiquido,
+                        margem: margem, modoReverso: false
                     };
                     listaHistorico.push(novoItem);
                     itensImportados++;
@@ -274,11 +296,7 @@ function importarBackup(input) {
             }
         }
         if (itensImportados > 0) {
-            atualizarMemoria();
-            renderizarTabela();
-            alert(itensImportados + " produtos restaurados!");
-        } else {
-            alert("Erro ao ler backup.");
+            atualizarMemoria(); renderizarTabela(); alert(itensImportados + " restaurados!");
         }
         input.value = ""; 
     };

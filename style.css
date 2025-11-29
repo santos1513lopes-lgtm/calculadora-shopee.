@@ -1,33 +1,81 @@
- /* ARQUIVO: style.css */
+/* ARQUIVO: style.css */
 
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-.container { max-width: 950px; margin: 0 auto; background: white; padding: 0; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+/* --- VARIÁVEIS DE CORES (O Segredo do Tema) --- */
+:root {
+    --bg-body: #f5f5f5;
+    --bg-container: #ffffff;
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --border-color: #ddd;
+    --shopee-orange: #ee4d2d;
+    --bg-config: #fff1eb;
+    --border-config: #ee4d2d;
+    --bg-input: #ffffff;
+    --bg-table-head: #ee4d2d;
+    --bg-table-zebra: #f9f9f9;
+    --shadow: rgba(0,0,0,0.1);
+    --bg-painel-fixo: rgba(255, 255, 255, 0.95); /* Leve transparência */
+}
+
+/* CORES DO MODO ESCURO */
+[data-theme="dark"] {
+    --bg-body: #121212;
+    --bg-container: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --border-color: #333333;
+    --shopee-orange: #ff6b4a; /* Laranja um pouco mais claro para contraste */
+    --bg-config: #2d1b15;     /* Laranja muito escuro */
+    --border-config: #ff6b4a;
+    --bg-input: #2c2c2c;
+    --bg-table-head: #b83216; /* Laranja mais fechado */
+    --bg-table-zebra: #252525;
+    --shadow: rgba(0,0,0,0.5);
+    --bg-painel-fixo: rgba(30, 30, 30, 0.95);
+}
+
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px; color: var(--text-primary); transition: background-color 0.3s; }
+
+.container { 
+    max-width: 950px; margin: 0 auto; background: var(--bg-container); padding: 0; 
+    border-radius: 10px; box-shadow: 0 4px 15px var(--shadow); overflow: hidden; 
+    transition: background-color 0.3s;
+}
 
 /* --- PAINEL FIXO --- */
 .painel-fixo {
-    position: sticky; top: 0; background-color: white; z-index: 1000;
-    padding: 20px 25px 10px 25px; border-bottom: 3px solid #f0f0f0;
+    position: sticky; top: 0; background-color: var(--bg-painel-fixo); z-index: 1000;
+    padding: 20px 25px 10px 25px; border-bottom: 3px solid var(--border-color);
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    backdrop-filter: blur(5px); /* Efeito de vidro */
 }
 
 .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-h1 { color: #ee4d2d; margin: 0; font-size: 1.5em; }
+h1 { color: var(--shopee-orange); margin: 0; font-size: 1.5em; }
 
-.btn-config { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #777; transition: 0.3s; padding: 5px; }
-.btn-config:hover { color: #ee4d2d; transform: rotate(90deg); }
+/* Botões de Cabeçalho (Config e Tema) */
+.header-actions { display: flex; gap: 10px; }
+
+.btn-icon { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); transition: 0.3s; padding: 5px; }
+.btn-icon:hover { color: var(--shopee-orange); transform: scale(1.1); }
+.rotate { transform: rotate(90deg); color: var(--shopee-orange); }
 
 .config-box { 
-    background-color: #fff1eb; border: 1px solid #ee4d2d; padding: 15px; border-radius: 8px; 
+    background-color: var(--bg-config); border: 1px solid var(--border-config); padding: 15px; border-radius: 8px; 
     margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; transition: all 0.3s ease-in-out; 
 }
 
 .input-group { flex: 1; min-width: 130px; margin-bottom: 5px; }
-label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 0.85em; color: #555; }
-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 0.95em; }
+label { display: block; margin-bottom: 3px; font-weight: 600; font-size: 0.85em; color: var(--text-secondary); }
+input { 
+    width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px; 
+    box-sizing: border-box; font-size: 0.95em; 
+    background-color: var(--bg-input); color: var(--text-primary);
+}
 
 .compact-switch {
     display: flex; align-items: center; justify-content: flex-end;
-    margin-bottom: 10px; font-size: 0.9em; color: #555;
+    margin-bottom: 10px; font-size: 0.9em; color: var(--text-secondary);
 }
 .compact-switch input { width: auto; margin-right: 5px; cursor: pointer; }
 .compact-switch label { margin: 0; cursor: pointer; display: inline; }
@@ -36,26 +84,29 @@ input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; b
 .btn-container { text-align: center; margin-top: 15px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; }
 button:hover { opacity: 0.9; transform: translateY(-1px); }
-.btn-calc { background-color: #ee4d2d; color: white; }
+.btn-calc { background-color: var(--shopee-orange); color: white; }
 .btn-save { background-color: #28a745; color: white; }
 .btn-clear { background-color: #6c757d; color: white; }
 .btn-export { background-color: #007bff; color: white; }
-
-/* Botão Restaurar (Roxo) */
 .btn-restaurar { background-color: #6f42c1; color: white; }
 .btn-restaurar:hover { background-color: #5a32a3; }
 
 /* Resultados */
-.resultados { background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; text-align: center; border: 1px solid #e9ecef; }
-.res-item span { display: block; font-size: 1.1em; font-weight: bold; margin-top: 3px; color: #333; }
+.resultados { 
+    background-color: var(--bg-body); /* Usa fundo do body para contraste */
+    padding: 15px; border-radius: 8px; margin-top: 15px; 
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; 
+    text-align: center; border: 1px solid var(--border-color); 
+}
+.res-item span { display: block; font-size: 1.1em; font-weight: bold; margin-top: 3px; color: var(--text-primary); }
 
 /* Tabela */
 .table-padding { padding: 25px; }
 .table-container { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-th { background-color: #ee4d2d; color: white; }
-tr:nth-child(even) { background-color: #f9f9f9; }
+th, td { border: 1px solid var(--border-color); padding: 10px; text-align: center; color: var(--text-primary); }
+th { background-color: var(--bg-table-head); color: white; }
+tr:nth-child(even) { background-color: var(--bg-table-zebra); }
 
 .btn-small { padding: 5px 8px; font-size: 12px; margin: 0 2px; }
 .btn-edit { background-color: #ffc107; color: #333; }
