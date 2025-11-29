@@ -19,6 +19,7 @@ O foco é resolver a dor do vendedor: *"Por quanto devo vender para ter X% de lu
 * **🧠 Memória Persistente (LocalStorage):** O sistema salva automaticamente sua lista de produtos e suas taxas configuradas. Se fechar o navegador, os dados permanecem lá.
 * **🔄 Precificação Reversa:** Modo inteligente que calcula o preço de venda ideal baseado na margem de lucro desejada.
 * **⚙️ Configuração Dinâmica:** Ajuste fino de Taxa Padrão, Taxa Fixa, Impostos e Shopee Acelera.
+* **🌑 Dark Mode:** Tema escuro automático ou manual para maior conforto visual.
 * **💲 UX Financeira:** Máscaras de entrada monetária (R$) em tempo real e feedback visual de lucro/prejuízo.
 * **📱 Interface Responsiva:** Painel fixo ("Sticky Header") para facilitar o uso em listas longas e dispositivos móveis.
 
