@@ -1,42 +1,43 @@
- # 🛍️ Calculadora de Lucro Shopee
+ # 🛍️ Calculadora Shopee Pro
 
-> Uma ferramenta prática para vendedores calcularem margens, taxas e lucro líquido de forma automática e organizada.
+> Ferramenta avançada para precificação e análise de lucro para vendedores da Shopee.
 
-![Badge Concluído](http://img.shields.io/static/v1?label=STATUS&message=CONCLUÍDO&color=GREEN&style=for-the-badge)
+![Status Concluído](http://img.shields.io/static/v1?label=STATUS&message=CONCLUÍDO&color=GREEN&style=for-the-badge)
+![Tech HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![Tech CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Tech JS](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
 ## 💻 Sobre o Projeto
 
-Este projeto foi desenvolvido para substituir planilhas complexas, oferecendo uma interface web limpa e responsiva para simulação de vendas na plataforma Shopee. 
+Este projeto começou como uma automação de planilhas e evoluiu para uma **Aplicação Web Progressiva**. Diferente de calculadoras simples, esta ferramenta possui persistência de dados e funcionalidades de ERP.
 
-O objetivo é ajudar pequenos empreendedores a precificar corretamente seus produtos, garantindo que não tenham prejuízo com taxas e impostos.
+O objetivo é permitir que o vendedor simule cenários de venda, antecipe taxas e descubra o preço ideal para atingir sua meta de lucro.
 
-### ✨ Funcionalidades
+### ✨ Funcionalidades Avançadas
 
-- **Configuração de Taxas:** Ajuste fácil da porcentagem da plataforma, taxa fixa por item e impostos.
-- **Cálculo Automático:** Insira o custo e preço de venda para ver instantaneamente o Lucro Líquido e a Margem (%).
-- **Histórico de Cálculos:** Salve diferentes simulações numa tabela temporária para comparação.
-- **Feedback Visual:** Cores indicativas para lucro (verde) e prejuízo (vermelho).
-- **Exportação:** Exporte o histórico de cálculos para Excel (CSV).
-- **Limpeza Rápida:** Botão para limpar o histórico e começar novos cálculos.
+* **💾 Memória Local (LocalStorage):** O sistema salva automaticamente sua lista de produtos e suas configurações de taxas. Você pode fechar o navegador e voltar depois que os dados estarão lá.
+* **🔄 Modo Reverso (Precificação Inteligente):** Você diz quanto quer ganhar (margem %) e o sistema calcula por quanto você deve vender.
+* **⚙️ Configuração Persistente:** Ajuste as taxas (Comissão Padrão, Taxa Fixa, Impostos e Shopee Acelera) uma única vez. O sistema memoriza suas preferências.
+* **📱 UX Responsiva:** Painel de controle com "Sticky Header" (fixo no topo) para facilitar o uso em listas longas e no celular.
+* **💲 Máscaras de Input:** Formatação automática de moeda (R$) enquanto o usuário digita.
+* **📊 Exportação:** Gera relatórios detalhados em CSV compatível com Excel.
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias e Conceitos Aplicados
 
-O projeto foi construído utilizando tecnologias web padrão, sem dependência de bibliotecas externas (Vanilla JS):
+* **HTML5 Semântico:** Estrutura organizada.
+* **CSS3 Moderno:** Flexbox, Grid Layout, Position Sticky e Animações.
+* **JavaScript (Vanilla):**
+    * Manipulação avançada do DOM.
+    * Lógica matemática financeira.
+    * Gerenciamento de **LocalStorage** (CRUD).
+    * Regex para formatação de moeda em tempo real.
 
-* **HTML5** (Estrutura semântica)
-* **CSS3** (Estilização e Design Responsivo)
-* **JavaScript** (Lógica de cálculo e manipulação do DOM)
+## 🚀 Como acessar
 
-## 🚀 Como ver o projeto
+Acesse a versão online e responsiva (funciona no celular):
 
-Você pode acessar a calculadora funcionando diretamente pelo navegador através do GitHub Pages:
+🔗 **[CLIQUE AQUI PARA ABRIR A CALCULADORA](https://santos1513lopes-lgtm.github.io/calculadora-shopee/)**
 
-🔗 **[https://santos1513lopes-lgtm.github.io/calculadora-shopee./](COLOQUE_O_LINK_DO_SEU_SITE_AQUI)**
+---
 
-## 📂 Como rodar localmente
-
-Se quiser baixar este projeto para estudar o código:
-
-1. Clone o repositório:
-```bash
-git clone [https://github.com/santos1513lopes-lgtm/calculadora-shopee.git](https://github.com/santos1513lopes-lgtm/calculadora-shopee.git)
+Desenvolvido por **Santos Lopes** 🧡
