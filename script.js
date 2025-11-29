@@ -1,16 +1,14 @@
  // ARQUIVO: script.js
 
-// --- 1. INICIALIZAÇÃO (Carrega tudo ao abrir) ---
+// --- 1. INICIALIZAÇÃO ---
 let listaHistorico = JSON.parse(localStorage.getItem('shopee_db')) || [];
 
 window.onload = function() {
-    carregarConfig();   // <--- NOVIDADE: Carrega as taxas salvas
-    renderizarTabela(); // Carrega a lista de produtos
+    carregarConfig();   // Carrega taxas salvas
+    renderizarTabela(); // Carrega produtos salvos
 };
 
-// --- 2. GERENCIAMENTO DE CONFIGURAÇÕES (MEMÓRIA) ---
-
-// Salva as taxas no navegador sempre que mudam
+// --- 2. GERENCIAMENTO DE CONFIGURAÇÕES ---
 function salvarConfig() {
     let config = {
         taxaPorc: document.getElementById('cfgTaxaPorcentagem').value,
@@ -19,14 +17,11 @@ function salvarConfig() {
         antecipa: document.getElementById('cfgAntecipa').value
     };
     localStorage.setItem('shopee_config', JSON.stringify(config));
-    // Recalcula se houver dados na tela para refletir a nova taxa na hora
-    calcular(); 
+    calcular(); // Recalcula valores na tela se houver
 }
 
-// Busca as taxas salvas quando a página abre
 function carregarConfig() {
     let configSalva = JSON.parse(localStorage.getItem('shopee_config'));
-    
     if (configSalva) {
         document.getElementById('cfgTaxaPorcentagem').value = configSalva.taxaPorc;
         document.getElementById('cfgTaxaFixa').value = configSalva.taxaFixa;
@@ -35,7 +30,7 @@ function carregarConfig() {
     }
 }
 
-// --- 3. VISUAL (Mostrar/Esconder Config) ---
+// --- 3. VISUAL ---
 function toggleConfig() {
     let box = document.getElementById('boxConfiguracoes');
     let btn = document.getElementById('btnConfig');
@@ -50,7 +45,7 @@ function toggleConfig() {
     }
 }
 
-// --- 4. MÁSCARAS E CONVERSÃO ---
+// --- 4. MÁSCARAS E FORMATAÇÃO ---
 function formatarMoedaInput(input) {
     let valor = input.value.replace(/\D/g, "");
     valor = (valor / 100).toFixed(2) + "";
@@ -65,7 +60,7 @@ function converterMoeda(valorString) {
     return parseFloat(limpo) || 0;
 }
 
-// --- 5. LÓGICA DE CÁLCULO ---
+// --- 5. CÁLCULO CORE ---
 function alternarModo() {
     let checkbox = document.getElementById('switchModo');
     let divPreco = document.getElementById('grupoPrecoVenda');
@@ -107,10 +102,7 @@ function calcular() {
 
     if (v.modoReverso) {
         let denominador = 1 - (somaPorcentagens + (v.margemDesejada / 100));
-        if (denominador <= 0) { 
-            // Não vamos dar alert aqui para não travar a digitação, apenas retorna
-            return null; 
-        }
+        if (denominador <= 0) return null;
         precoVendaFinal = (custoTotal + v.taxaShopeeFixa) / denominador;
     } else {
         precoVendaFinal = v.vendaInput;
@@ -140,11 +132,10 @@ function calcular() {
     return { ...v, custoTotal, venda: precoVendaFinal, totalTaxas, lucroLiquido, margem };
 }
 
-// --- 6. TABELA E HISTÓRICO ---
+// --- 6. TABELA E AÇÕES ---
 function salvar() {
     let dados = calcular();
     if (!dados || dados.venda <= 0) { alert("Cálculo inválido!"); return; }
-
     listaHistorico.push(dados);
     atualizarMemoria();
     renderizarTabela();
@@ -187,27 +178,21 @@ function atualizarMemoria() {
 function renderizarTabela() {
     let tbody = document.getElementById('tabelaHistorico').getElementsByTagName('tbody')[0];
     tbody.innerHTML = ""; 
-
     const fmtDinheiro = (val) => val.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
 
     listaHistorico.forEach((item, index) => {
         let novaLinha = tbody.insertRow();
         novaLinha.insertCell(0).innerText = item.nome;
         novaLinha.insertCell(1).innerText = fmtDinheiro(item.custoTotal);
-        
         let celVenda = novaLinha.insertCell(2);
         celVenda.innerText = fmtDinheiro(item.venda);
         if(item.modoReverso) celVenda.style.color = "blue";
-
         novaLinha.insertCell(3).innerText = fmtDinheiro(item.totalTaxas);
-        
         let celLucro = novaLinha.insertCell(4);
         celLucro.innerText = fmtDinheiro(item.lucroLiquido);
         celLucro.style.color = item.lucroLiquido >= 0 ? "green" : "red";
         celLucro.style.fontWeight = "bold";
-
         novaLinha.insertCell(5).innerText = item.margem.toFixed(2).replace('.', ',') + '%';
-
         let celAcoes = novaLinha.insertCell(6);
         celAcoes.innerHTML = `
             <button class="btn-small btn-edit" onclick="editarItem(${index})">✏️</button>
@@ -216,6 +201,7 @@ function renderizarTabela() {
     });
 }
 
+// --- 7. EXPORTAR E RESTAURAR (BACKUP) ---
 function exportarExcel() {
     let csv = [];
     csv.push("Produto;Custo Total;Venda;Taxas;Lucro;Margem");
@@ -235,4 +221,66 @@ function exportarExcel() {
     link.href = window.URL.createObjectURL(csvFile);
     link.download = "Shopee_Historico.csv";
     link.click();
+}
+
+function importarBackup(input) {
+    let arquivo = input.files[0];
+    if (!arquivo) return;
+
+    let leitor = new FileReader();
+    leitor.onload = function(e) {
+        let texto = e.target.result;
+        let linhas = texto.split('\n');
+        let itensImportados = 0;
+
+        for (let i = 1; i < linhas.length; i++) {
+            let linha = linhas[i].trim();
+            if (linha) {
+                let colunas = linha.split(';');
+                if (colunas.length >= 6) {
+                    let nome = colunas[0];
+                    let custoTotal = converterMoeda(colunas[1]); 
+                    let venda = converterMoeda(colunas[2]);
+                    
+                    // Recalcula taxas com base na config atual para integridade
+                    let taxaShopeePorc = parseFloat(document.getElementById('cfgTaxaPorcentagem').value) || 0;
+                    let taxaShopeeFixa = parseFloat(document.getElementById('cfgTaxaFixa').value) || 0;
+                    let impostoPorc = parseFloat(document.getElementById('cfgImpostos').value) || 0;
+                    let antecipaPorc = parseFloat(document.getElementById('cfgAntecipa').value) || 0;
+
+                    let precoVendaFinal = venda;
+                    let valorTaxaShopee = (precoVendaFinal * (taxaShopeePorc / 100)) + taxaShopeeFixa;
+                    let valorImpostos = precoVendaFinal * (impostoPorc / 100);
+                    let valorAntecipa = precoVendaFinal * (antecipaPorc / 100);
+                    let totalTaxas = valorTaxaShopee + valorImpostos + valorAntecipa;
+                    let lucroLiquido = precoVendaFinal - custoTotal - totalTaxas;
+                    let margem = 0;
+                    if (precoVendaFinal > 0) margem = (lucroLiquido / precoVendaFinal) * 100;
+
+                    let novoItem = {
+                        nome: nome,
+                        custo: custoTotal,
+                        insumos: 0,
+                        custoTotal: custoTotal,
+                        venda: precoVendaFinal,
+                        totalTaxas: totalTaxas,
+                        lucroLiquido: lucroLiquido,
+                        margem: margem,
+                        modoReverso: false
+                    };
+                    listaHistorico.push(novoItem);
+                    itensImportados++;
+                }
+            }
+        }
+        if (itensImportados > 0) {
+            atualizarMemoria();
+            renderizarTabela();
+            alert(itensImportados + " produtos restaurados!");
+        } else {
+            alert("Erro ao ler backup.");
+        }
+        input.value = ""; 
+    };
+    leitor.readAsText(arquivo);
 }

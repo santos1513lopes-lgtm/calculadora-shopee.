@@ -79,7 +79,11 @@
             <button class="btn-calc" onclick="calcular()">Calcular</button>
             <button class="btn-save" onclick="salvar()">Salvar</button>
             <button class="btn-clear" onclick="limparTabela()">Limpar</button>
-            <button class="btn-export" onclick="exportarExcel()">Excel</button>
+            
+            <button class="btn-export" onclick="exportarExcel()" title="Baixar Backup CSV">💾 Backup</button>
+            
+            <input type="file" id="inputImportar" style="display: none;" accept=".csv" onchange="importarBackup(this)">
+            <button class="btn-restaurar" onclick="document.getElementById('inputImportar').click()" title="Carregar Backup">📂 Restaurar</button>
         </div>
 
         <div class="resultados">

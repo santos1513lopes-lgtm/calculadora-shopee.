@@ -1,6 +1,6 @@
  # 🛍️ Calculadora Shopee Pro
 
-> Ferramenta avançada para precificação e análise de lucro para vendedores da Shopee.
+> A ferramenta definitiva para vendedores da Shopee: precificação, análise de lucro e gestão local de produtos.
 
 ![Status Concluído](http://img.shields.io/static/v1?label=STATUS&message=CONCLUÍDO&color=GREEN&style=for-the-badge)
 ![Tech HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
@@ -9,35 +9,42 @@
 
 ## 💻 Sobre o Projeto
 
-Este projeto começou como uma automação de planilhas e evoluiu para uma **Aplicação Web Progressiva**. Diferente de calculadoras simples, esta ferramenta possui persistência de dados e funcionalidades de ERP.
+Este projeto é uma **Aplicação Web (SPA)** focada em produtividade para e-commerce. Diferente de calculadoras comuns, ela funciona como um pequeno sistema de gestão (ERP Local), permitindo salvar históricos e configurações sem necessidade de servidores externos.
 
-O objetivo é permitir que o vendedor simule cenários de venda, antecipe taxas e descubra o preço ideal para atingir sua meta de lucro.
+O foco é resolver a dor do vendedor: *"Por quanto devo vender para ter X% de lucro real, já descontando todas as taxas?"*
 
-### ✨ Funcionalidades Avançadas
+### ✨ Funcionalidades Principais
 
-* **💾 Memória Local (LocalStorage):** O sistema salva automaticamente sua lista de produtos e suas configurações de taxas. Você pode fechar o navegador e voltar depois que os dados estarão lá.
-* **🔄 Modo Reverso (Precificação Inteligente):** Você diz quanto quer ganhar (margem %) e o sistema calcula por quanto você deve vender.
-* **⚙️ Configuração Persistente:** Ajuste as taxas (Comissão Padrão, Taxa Fixa, Impostos e Shopee Acelera) uma única vez. O sistema memoriza suas preferências.
-* **📱 UX Responsiva:** Painel de controle com "Sticky Header" (fixo no topo) para facilitar o uso em listas longas e no celular.
-* **💲 Máscaras de Input:** Formatação automática de moeda (R$) enquanto o usuário digita.
-* **📊 Exportação:** Gera relatórios detalhados em CSV compatível com Excel.
+* **💾 Backup & Restauração:** Exporte seus dados para um arquivo de segurança no seu computador e restaure quando quiser (ou transfira para outro dispositivo).
+* **🧠 Memória Persistente (LocalStorage):** O sistema salva automaticamente sua lista de produtos e suas taxas configuradas. Se fechar o navegador, os dados permanecem lá.
+* **🔄 Precificação Reversa:** Modo inteligente que calcula o preço de venda ideal baseado na margem de lucro desejada.
+* **⚙️ Configuração Dinâmica:** Ajuste fino de Taxa Padrão, Taxa Fixa, Impostos e Shopee Acelera.
+* **💲 UX Financeira:** Máscaras de entrada monetária (R$) em tempo real e feedback visual de lucro/prejuízo.
+* **📱 Interface Responsiva:** Painel fixo ("Sticky Header") para facilitar o uso em listas longas e dispositivos móveis.
 
-## 🛠️ Tecnologias e Conceitos Aplicados
+## 🛠️ Tecnologias Utilizadas
 
-* **HTML5 Semântico:** Estrutura organizada.
-* **CSS3 Moderno:** Flexbox, Grid Layout, Position Sticky e Animações.
-* **JavaScript (Vanilla):**
-    * Manipulação avançada do DOM.
-    * Lógica matemática financeira.
-    * Gerenciamento de **LocalStorage** (CRUD).
-    * Regex para formatação de moeda em tempo real.
+O projeto foi construído com **Vanilla JavaScript** (sem frameworks), demonstrando domínio dos fundamentos da web:
+
+* **HTML5:** Estrutura semântica e acessível.
+* **CSS3:** Flexbox, Grid, Animações e Design Responsivo.
+* **JavaScript (ES6+):**
+    * `FileReader API` para leitura de backups.
+    * `LocalStorage` para persistência de dados.
+    * Manipulação avançada do DOM e Eventos.
 
 ## 🚀 Como acessar
 
-Acesse a versão online e responsiva (funciona no celular):
+Acesse a versão online funcionando agora mesmo:
 
-🔗 **[CLIQUE AQUI PARA ABRIR A CALCULADORA](https://santos1513lopes-lgtm.github.io/calculadora-shopee./)**
+🔗 **[CLIQUE AQUI PARA ABRIR A CALCULADORA](https://santos1513lopes-lgtm.github.io/calculadora-shopee/)**
 
 ---
 
-Desenvolvido por **Santos Lopes** 🧡
+### 📂 Como rodar localmente
+
+Se quiser clonar este repositório para estudo:
+
+1. Clone o projeto:
+```bash
+git clone [https://github.com/santos1513lopes-lgtm/calculadora-shopee.git](https://github.com/santos1513lopes-lgtm/calculadora-shopee.git)
